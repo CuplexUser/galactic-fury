@@ -1,14 +1,14 @@
 import sys
 import math
 import random
+import os
 import pygame
 
-from config import WIDTH, HEIGHT, FPS, TITLE, HUD_COLOR, ENEMY_BULLET_COLOR
+from config import WIDTH, HEIGHT, FPS, TITLE, HUD_COLOR, ENEMY_BULLET_COLOR, ASSET_DIR
 from background import Background
 from audio import AudioManager
 from utils import read_hiscore, write_hiscore
 from entities import Bullet, Particle, Asteroid, PowerUp, Player, Enemy, Boss
-from assets import ensure_assets
 
 
 class Game:
@@ -20,7 +20,6 @@ class Game:
             pygame.mixer.init()
         except Exception:
             self.audio_ok = False
-        ensure_assets()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption(TITLE)
         pygame.mouse.set_visible(False)
@@ -33,6 +32,8 @@ class Game:
 
         self.audio = AudioManager(self.audio_ok)
         self.audio.init()
+        self.player_laser = self._load_image("player_laser.png")
+        self.enemy_laser = self._load_image("enemy_laser.png")
 
         self.state = "MENU"
         self.menu_index = 0
@@ -59,6 +60,15 @@ class Game:
         self.asteroid_timer = 0
         self.background = Background()
         self.level_transition_timer = 0
+
+    def _load_image(self, name):
+        path = os.path.join(ASSET_DIR, name)
+        if os.path.exists(path):
+            try:
+                return pygame.image.load(path).convert_alpha()
+            except Exception:
+                return None
+        return None
 
     def reset_game(self):
         self.score = 0
@@ -188,9 +198,9 @@ class Game:
         x, y = self.player.rect.center
         if self.player.triple_shot > 0:
             for dx in (-14, 0, 14):
-                self.player_bullets.add(Bullet(x + dx, y - 15))
+                self.player_bullets.add(Bullet(x + dx, y - 15, image=self.player_laser))
         else:
-            self.player_bullets.add(Bullet(x, y - 15))
+            self.player_bullets.add(Bullet(x, y - 15, image=self.player_laser))
 
     def fire_enemy_bullet(self, enemy):
         if len(self.enemy_bullets) > 12 + self.level * 6:
@@ -198,7 +208,7 @@ class Game:
         difficulty = min(1.0, self.level_time / 45)
         chance = 0.003 + difficulty * 0.004 + self.level * 0.0015
         if random.random() < chance:
-            bullet = Bullet(enemy.rect.centerx, enemy.rect.bottom + 6, speed=190 + self.level * 18, color=ENEMY_BULLET_COLOR)
+            bullet = Bullet(enemy.rect.centerx, enemy.rect.bottom + 6, speed=190 + self.level * 18, color=ENEMY_BULLET_COLOR, image=self.enemy_laser)
             self.enemy_bullets.add(bullet)
 
     def fire_boss_bullets(self, boss):
@@ -213,11 +223,11 @@ class Game:
                 dy = py - by
                 dist = max(1, math.hypot(dx, dy))
                 speed = 220
-                bullet = Bullet(bx, by, color=ENEMY_BULLET_COLOR, damage=2, vx=(dx / dist) * speed, vy=(dy / dist) * speed)
+                bullet = Bullet(bx, by, color=ENEMY_BULLET_COLOR, damage=2, vx=(dx / dist) * speed, vy=(dy / dist) * speed, image=self.enemy_laser)
                 self.enemy_bullets.add(bullet)
         else:
             for offset in (-40, 0, 40):
-                bullet = Bullet(boss.rect.centerx + offset, boss.rect.bottom + 10, speed=220 + self.level * 24, color=ENEMY_BULLET_COLOR, damage=2)
+                bullet = Bullet(boss.rect.centerx + offset, boss.rect.bottom + 10, speed=220 + self.level * 24, color=ENEMY_BULLET_COLOR, damage=2, image=self.enemy_laser)
                 self.enemy_bullets.add(bullet)
 
     def handle_collisions(self):
@@ -415,7 +425,7 @@ class Game:
         surface.blit(text, (WIDTH // 2 - text.get_width() // 2, 140))
         score = self.font.render(f"Final Score: {self.score}", True, (230, 235, 240))
         surface.blit(score, (WIDTH // 2 - score.get_width() // 2, 220))
-        credits = self.font.render("Thanks for playing Sky Fury 1945", True, (200, 210, 220))
+        credits = self.font.render("Thanks for playing Galaxy Fury", True, (200, 210, 220))
         surface.blit(credits, (WIDTH // 2 - credits.get_width() // 2, 280))
         tip = self.font.render("Press ENTER to return to menu", True, (200, 210, 220))
         surface.blit(tip, (WIDTH // 2 - tip.get_width() // 2, 340))

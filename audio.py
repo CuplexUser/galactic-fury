@@ -68,12 +68,12 @@ class AudioManager:
         if not self.audio_ok:
             return
         sr = pygame.mixer.get_init()[0] if pygame.mixer.get_init() else 22050
-        self.sfx_pew = load_sound("pew.wav") or make_gun_burst()
-        self.sfx_boom = load_sound("boom.wav") or make_explosion()
-        self.sfx_power = load_sound("powerup.wav") or make_beep(520, 0.12, 0.30, sample_rate=sr)
-        self.sfx_boss = load_sound("boss_enter.wav") or make_beep(180, 0.45, 0.30, sample_rate=sr)
-        self.sfx_gameover = load_sound("gameover.wav") or make_beep(110, 0.60, 0.30, sample_rate=sr)
-        self.engine_loop = load_sound("engine_loop.wav") or make_engine_loop(sample_rate=sr)
+        self.sfx_pew = load_sound("pew.ogg") or make_gun_burst()
+        self.sfx_boom = load_sound("boom.ogg") or make_explosion()
+        self.sfx_power = load_sound("powerup.ogg") or make_beep(520, 0.12, 0.30, sample_rate=sr)
+        self.sfx_boss = load_sound("boss_enter.ogg") or make_beep(180, 0.45, 0.30, sample_rate=sr)
+        self.sfx_gameover = load_sound("gameover.ogg") or make_beep(110, 0.60, 0.30, sample_rate=sr)
+        self.engine_loop = load_sound("engine_loop.ogg")
         self.apply_volumes()
 
     def apply_volumes(self):
@@ -82,7 +82,7 @@ class AudioManager:
                 sfx.set_volume(self.sfx_volume)
 
     def play_bgm(self, level):
-        track = f"level{level}_bgm.wav"
+        track = f"level{level}_bgm.ogg"
         if self.audio_ok and load_music(track):
             pygame.mixer.music.set_volume(self.music_volume)
             pygame.mixer.music.play(-1)

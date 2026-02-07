@@ -9,10 +9,13 @@ from sprites import SpriteFactory
 
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, x, y, speed=-520, color=PLAYER_BULLET_COLOR, damage=1, vx=0, vy=None):
+    def __init__(self, x, y, speed=-520, color=PLAYER_BULLET_COLOR, damage=1, vx=0, vy=None, image=None):
         super().__init__()
-        self.image = pygame.Surface((4, 12))
-        self.image.fill(color)
+        if image is not None:
+            self.image = image
+        else:
+            self.image = pygame.Surface((4, 12))
+            self.image.fill(color)
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = speed
         self.damage = damage

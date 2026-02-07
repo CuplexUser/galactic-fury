@@ -2,7 +2,7 @@ import os
 
 WIDTH, HEIGHT = 800, 600
 FPS = 60
-TITLE = "Sky Fury 1945"
+TITLE = "Galaxy Fury"
 
 BASE_DIR = os.path.dirname(__file__)
 ASSET_DIR = os.path.join(BASE_DIR, "assets")
