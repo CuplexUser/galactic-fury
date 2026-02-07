@@ -1,0 +1,6 @@
+[venv]
+name = "fury-env"
+python = "python"
+
+[packages]
+pygame = "installed"
